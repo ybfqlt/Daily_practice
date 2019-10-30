@@ -3,7 +3,7 @@ package com.caozuoxitong;
 import java.util.Scanner;
 
 /**
- * @Classname Banker
+ * @Classname 银行家算法
  * @Description TODO
  * @Date 19-10-21 上午10:57
  * @Created by xns

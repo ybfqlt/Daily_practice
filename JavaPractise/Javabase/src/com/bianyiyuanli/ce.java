@@ -1,4 +1,4 @@
-package com.binayiyuanli;
+package com.bianyiyuanli;
 
 /**
  * @Classname ce
