@@ -1,7 +1,7 @@
 package com.caozuoxitong;
 
-import java.util.LinkedList;
-import java.util.Scanner;
+import java.io.*;
+import java.util.*;
 
 /**
  * @Classname FF算法
@@ -9,7 +9,7 @@ import java.util.Scanner;
  * @Date 19-10-29 下午4:53
  * @Created by xns
  */
-class Block {
+class Block implements Serializable {
     Integer id;
     /**
      * 存储区域长度
@@ -32,6 +32,7 @@ class Block {
         this.end = end;
         this.status = status;
     }
+
 
     public Integer getId() {
         return id;
@@ -72,6 +73,22 @@ class Block {
     public void setStatus(Integer status) {
         this.status = status;
     }
+
+
+}
+
+class blockCompare implements Comparator<Block> {
+
+    @Override
+    public int compare(Block o1, Block o2) {
+        if (o2.getLength() < o1.getLength()) {
+            return 1;
+        }
+        if (o2.getLength() > o1.getLength()) {
+            return -1;
+        }
+        return 0;
+    }
 }
 
 public class Neicun {
@@ -110,10 +127,16 @@ public class Neicun {
         });
     }
 
-    public static void Allocation(int num, int size) {
+    /**
+     * ff算法
+     *
+     * @param num
+     * @param size
+     */
+    public static void ffAllocation(int num, int size) {
         int biao = 0;
         for (int i = 0; i < memory.size(); i++) {
-            if (memory.get(i).getStatus() == 0 && memory.get(i).getLength() > size) {
+            if (memory.get(i).getStatus() == 0 && memory.get(i).getLength() >= size) {
                 biao = 1;
                 pushProcess(num, memory.get(i).getId(), memory.get(i).getStart(), size);
                 if (memory.get(i).getStatus() == 0) {
@@ -128,6 +151,48 @@ public class Neicun {
         if (biao == 0) {
             System.out.println("无可用空闲区，无法分配，请等待");
             pushProcess(num, -1, 0, size);
+        }
+    }
+
+    public static LinkedList<Block> deepCopy(LinkedList<Block> src) throws IOException, ClassNotFoundException {
+        ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
+        ObjectOutputStream out = new ObjectOutputStream(byteOut);
+        out.writeObject(src);
+        ByteArrayInputStream byteIn = new ByteArrayInputStream(byteOut.toByteArray());
+        ObjectInputStream in = new ObjectInputStream(byteIn);
+        LinkedList<Block> dest = (LinkedList<Block>) in.readObject();
+        return dest;
+    }
+
+    /**
+     * BF算法分配
+     * @param num,size
+     */
+    public static void bfAllocation(int num, int size) {
+        LinkedList<Block> temp = null;
+        try {
+            temp = deepCopy(memory);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        Collections.sort(temp, new blockCompare());
+        for (Block block : temp) {
+            if (block.getLength() >= size && block.getStatus() == 0) {
+                pushProcess(num, block.getId(), block.getStart(), size);
+                for (int i = 0; i < memory.size(); i++) {
+                    if (memory.get(i).getId().equals(block.getId())) {
+                        if (memory.get(i).getStatus() == 0) {
+                            memory.get(i).setStart(memory.get(i).getStart() + size);
+                            memory.get(i).setLength(memory.get(i).getLength() - size);
+                        }
+                        System.out.println("分配成功,所分配分区为" + memory.get(i).getId());
+                        break;
+                    }
+                }
+                break;
+            }
         }
     }
 
@@ -173,10 +238,10 @@ public class Neicun {
      * @return
      */
     public static void initMemory() {
-        int all,rest;
+        int all, rest;
         int n, i, choose = 0;
         memory = new LinkedList<>();
-        int start0 = 0, length0=0;
+        int start0 = 0, length0 = 0;
         System.out.println("请输入memory大小:");
         all = in.nextInt();
         System.out.println("请输入要分成区块数量:");
@@ -186,24 +251,27 @@ public class Neicun {
         switch (choose) {
             case 1:
                 for (i = 0; i < n; i++) {
-                    Block block = new Block(i, all/n, i*(all/n),i*(all/n)+ all/n, 0);
+                    Block block = new Block(i, all / n, i * (all / n), i * (all / n) + all / n, 0);
                     memory.add(block);
                 }
                 break;
             case 2:
-                rest=all;
+                rest = all;
                 int start = 0;
-                for (i = 0; i < n-1; i++) {
-                    System.out.println("起始地址"+start+",请输入第"+i+"块空闲分区大小:");
+                for (i = 0; i < n - 1; i++) {
+                    System.out.println("起始地址" + start + ",请输入第" + i + "块空闲分区大小:");
                     start0 = start;
                     length0 = in.nextInt();
                     Block block = new Block(i, length0, start0, start0 + length0, 0);
                     memory.add(block);
-                    start+=length0;
-                    all-=length0;
+                    start += length0;
+                    rest -= length0;
+                    if (i == n - 2) {
+                        start0 = start;
+                    }
                 }
-                System.out.print("起始地址"+start+",请输入第"+i+"块空闲分区大小为:"+rest);
-                Block block = new Block(i, rest,start0 , start0 + length0, 0);
+                System.out.println("起始地址" + start + ",请输入第" + i + "块空闲分区大小为:" + rest);
+                Block block = new Block(i, rest, start0, start0 + rest, 0);
                 memory.add(block);
                 break;
             default:
@@ -215,20 +283,27 @@ public class Neicun {
 
     public static void main(String[] args) {
         int count, m = 0;
-        String flag = "f";
+        int flag = 1;
         process = new LinkedList<>();
         int size, num;
-        System.out.println("------------动态分区分配算法FF------------");
+        System.out.println("------------初始化分区------------");
         initMemory();
         System.out.println("--------------空闲分区---------------");
         printMemory();
-        while (!flag.equals("q")) {
-            if (flag.equals("f")) {
+        while (flag != 0) {
+            if (flag == 1) {
                 m++;
                 System.out.println("请输入进程" + m + "所需要空间的大小");
                 size = in.nextInt();
-                Allocation(m, size);
-            } else if (flag.equals("s")) {
+                System.out.println("请选择分配方法: 1:FF算法  2:BF算法");
+                int ch = in.nextInt();
+                if(ch==1) {
+                    ffAllocation(m, size);
+                }
+                else if(ch==2){
+                    bfAllocation(m,size);
+                }
+            } else if (flag == 2) {
                 System.out.println("请输入要释放进程的编号");
                 num = in.nextInt();
                 recycle(num);
@@ -237,8 +312,8 @@ public class Neicun {
             printMemory();
             System.out.println("--------------进程表---------------");
             printProcess();
-            System.out.println("请选择 f:内存分配   s:回收内存   q:退出当前操作");
-            flag = in.nextLine();
+            System.out.println("请选择 1:内存分配   2:回收内存   0:退出当前操作");
+            flag = in.nextInt();
         }
     }
 }
