@@ -164,8 +164,41 @@ public class Neicun {
         return dest;
     }
 
+
+    /**
+     * WF算法分配
+     *
+     * @param num,size
+     */
+    public static void wfAllocation(int num, int size) {
+        LinkedList<Block> temp = null;
+        try {
+            temp = deepCopy(memory);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        Collections.sort(temp, new blockCompare());
+        Block block = temp.get(temp.size() - 1);
+        if (block.getLength() >= size && block.getStatus() == 0) {
+            pushProcess(num, block.getId(), block.getStart(), size);
+            for (int i = 0; i < memory.size(); i++) {
+                if (memory.get(i).getId().equals(block.getId())) {
+                    if (memory.get(i).getStatus() == 0) {
+                        memory.get(i).setStart(memory.get(i).getStart() + size);
+                        memory.get(i).setLength(memory.get(i).getLength() - size);
+                    }
+                    System.out.println("分配成功,所分配分区为" + memory.get(i).getId());
+                    break;
+                }
+            }
+        }
+    }
+
     /**
      * BF算法分配
+     *
      * @param num,size
      */
     public static void bfAllocation(int num, int size) {
@@ -295,13 +328,14 @@ public class Neicun {
                 m++;
                 System.out.println("请输入进程" + m + "所需要空间的大小");
                 size = in.nextInt();
-                System.out.println("请选择分配方法: 1:FF算法  2:BF算法");
+                System.out.println("请选择分配方法: 1:FF算法  2:BF算法  3:WF算法");
                 int ch = in.nextInt();
-                if(ch==1) {
+                if (ch == 1) {
                     ffAllocation(m, size);
-                }
-                else if(ch==2){
-                    bfAllocation(m,size);
+                } else if (ch == 2) {
+                    bfAllocation(m, size);
+                } else if (ch == 3) {
+                    wfAllocation(m, size);
                 }
             } else if (flag == 2) {
                 System.out.println("请输入要释放进程的编号");
