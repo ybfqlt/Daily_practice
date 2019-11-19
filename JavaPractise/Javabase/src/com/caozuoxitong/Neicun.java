@@ -342,9 +342,9 @@ public class Neicun {
                 num = in.nextInt();
                 recycle(num);
             }
-            System.out.println("--------------空闲分区---------------");
+            System.out.println("--------------空闲分区情况--------------");
             printMemory();
-            System.out.println("--------------进程表---------------");
+            System.out.println("--------------进程分配情况---------------");
             printProcess();
             System.out.println("请选择 1:内存分配   2:回收内存   0:退出当前操作");
             flag = in.nextInt();
