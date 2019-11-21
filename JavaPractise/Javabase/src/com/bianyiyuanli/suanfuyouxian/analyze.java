@@ -3,6 +3,13 @@ package com.bianyiyuanli.suanfuyouxian;
 import java.util.*;
 
 /**
+ * S->v=E|E?|l
+ * E->E+T|E-T|T
+ * T->T*F|T/F|F
+ * F->(E)|v|c
+ */
+
+/**
  * @Classname analyze
  * @Description TODO
  * @Date 19-11-19 下午4:51
@@ -13,7 +20,17 @@ public class analyze {
     private static Map<Character, Set<Character>> lastVt = new HashMap<>();
     private static List<String> input = new ArrayList<>();
 
+    //终结符
+    private static Set<Character> End = new LinkedHashSet<>();
+
+    //非终结符
+    private static Set<Character> NoEnd = new LinkedHashSet<>();
+
+    private static Map<String, Character> matrix = new HashMap<>();
+
     private static Scanner in = new Scanner(System.in);
+
+    private static Map<Character, List<String>> produce = new HashMap<>();
 
 
     /**
@@ -58,22 +75,21 @@ public class analyze {
         }
         for (i = 3; i < str.length(); i++) {
             if (str.charAt(i) < 65 || str.charAt(i) > 90) {
-                if(i==str.length()-1||(i==str.length()-2&&str.charAt(i+1)>=65&&str.charAt(i+1)<=90&&str.charAt(i)!='|'&&(str.charAt(i)!='>'&&str.charAt(i)!='-'))){
+                if (i == str.length() - 1 || (i == str.length() - 2 && str.charAt(i + 1) >= 65 && str.charAt(i + 1) <= 90 && str.charAt(i) != '|' && (str.charAt(i) != '>' && str.charAt(i) != '-'))) {
                     lvt.add(str.charAt(i));
                 }
-                if(i<str.length()-2){
-                    if(str.charAt(i + 1) == '|'||(str.charAt(i+2)=='|'&&str.charAt(i+1)>=65&&str.charAt(i+1)<=90)){
+                if (i < str.length() - 2) {
+                    if (str.charAt(i + 1) == '|' || (str.charAt(i + 2) == '|' && str.charAt(i + 1) >= 65 && str.charAt(i + 1) <= 90)) {
                         lvt.add(str.charAt(i));
                     }
                 }
-            }
-            else{
-                if(i==str.length()-1){
+            } else {
+                if (i == str.length() - 1) {
                     if (str.charAt(i) == str.charAt(0)) {
                         continue;
                     }
                     getLastVT(str.charAt(i), lvt);
-                }else if(str.charAt(i+1) == '|'){
+                } else if (str.charAt(i + 1) == '|') {
                     if (str.charAt(i) == str.charAt(0)) {
                         continue;
                     }
@@ -127,6 +143,132 @@ public class analyze {
 
 
     /**
+     * 获取所有终结符
+     */
+    private static void getEnd() {
+        for (int i = 0; i < input.size(); i++) {
+            String temp = input.get(i);
+            for (int j = 3; j < temp.length(); j++) {
+                if (temp.charAt(j) < 65 || temp.charAt(j) > 90 && temp.charAt(j) != '|') {
+//                    if(temp.charAt(j)<97||temp.charAt(j)>122) {
+                    End.add(temp.charAt(j));
+//                    }
+                }
+            }
+        }
+        End.add('#');
+    }
+
+    /**
+     * 获取所有非终结符
+     */
+    private static void getNoEnd() {
+        for (int i = 0; i < input.size(); i++) {
+            String temp = input.get(i);
+            for (int j = 3; j < temp.length(); j++) {
+                if (temp.charAt(j) >= 65 && temp.charAt(j) <= 90) {
+                    NoEnd.add(temp.charAt(j));
+                }
+            }
+        }
+    }
+
+    /**
+     * 将产生式的左部和右部分离
+     */
+    private static void getProduce() {
+        for (int i = 0; i < input.size(); i++) {
+            List<String> list = new ArrayList<>();
+            String str = input.get(i);
+            StringBuffer a = new StringBuffer();
+            for (int j = 3; j < str.length(); j++) {
+                if (str.charAt(j) != '|') {
+                    a.append(str.charAt(j));
+                } else {
+                    list.add(a.toString());
+                    a.delete(0, a.length());
+                }
+            }
+            list.add(a.toString());
+            produce.put(str.charAt(0), list);
+        }
+    }
+
+    /**
+     * 构造算符优先矩阵并打印
+     *
+     * @return
+     */
+    private static void priorityMatrix() {
+        for (int i = 0; i < input.size(); i++) {
+            String str = input.get(i);
+            for (int j = 3; j < input.get(i).length(); j++) {
+                if ((str.charAt(j) < 65 || str.charAt(j) > 90) && (str.charAt(j) != '|')) {
+                    if (j < str.length() - 1 && (str.charAt(j + 1) < 65 || str.charAt(j + 1) > 90)) {
+                        String temp = str.charAt(j) + "" + str.charAt(j + 1);
+                        matrix.put(temp, '=');
+                    } else {
+                        if (j < str.length() - 2 && (str.charAt(j + 2) < 65 || str.charAt(j + 2) > 90) && (str.charAt(j + 2) != '|')) {
+                            matrix.put(str.charAt(j) + "" + str.charAt(j + 2), '=');
+                        }
+                    }
+                    if (j < str.length() - 1 && str.charAt(j + 1) >= 65 && str.charAt(j + 1) <= 90) {
+                        Set<Character> coll = firstVt.get(str.charAt(j + 1));
+                        for (Character value : coll) {
+                            matrix.put(str.charAt(j) + "" + value, '<');
+                        }
+                    }
+                    if (j - 1 != 2 && str.charAt(j - 1) >= 65 && str.charAt(j - 1) <= 90) {
+                        Set<Character> coll = lastVt.get(str.charAt(j - 1));
+                        for (Character value : coll) {
+                            matrix.put(value + "" + str.charAt(j), '>');
+                        }
+                    }
+                }
+            }
+        }
+        Set<Character> coll = firstVt.get(input.get(0).charAt(0));
+        for (Character value : coll) {
+            matrix.put('#' + "" + value, '<');
+        }
+        Set<Character> coll1 = lastVt.get(input.get(0).charAt(0));
+        for (Character value : coll1) {
+            matrix.put(value + "" + '#', '>');
+        }
+        matrix.put("##", '=');
+
+//        for (Map.Entry<String, Character> entry : matrix.entrySet()) {
+//            System.out.println(entry.getKey()+"   "+entry.getValue());
+//        }
+        getEnd();
+        System.out.println("\n构造的算符优先关系表如下:");
+        int kong = 0;
+        for (Character value : End) {
+            if (kong == 0) {
+                System.out.print("   ");
+            }
+            kong++;
+            System.out.print(value);
+            if (kong != End.size()) {
+                System.out.print("  ");
+            }
+        }
+        System.out.println();
+        for (Character value : End) {
+            System.out.print(value);
+            for (Character value1 : End) {
+                Character ch = matrix.get(value + "" + value1);
+                if (ch != null) {
+                    System.out.print("  " + ch);
+                } else {
+                    System.out.print("  " + " ");
+                }
+            }
+            System.out.println();
+        }
+    }
+
+    /**
      * 判断其是不是算符文法
      *
      * @return
@@ -146,6 +288,179 @@ public class analyze {
         return true;
     }
 
+    /**
+     * 判断其是不是终结符
+     *
+     * @return
+     */
+    private static boolean isEnd(Character ch) {
+        for (Character value : End) {
+            if (value.equals(ch)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 判断其是不是非终结符
+     *
+     * @return
+     */
+    private static boolean isNoEnd(Character ch) {
+        for (Character value : NoEnd) {
+            if (value.equals(ch)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 根据产生式右部分返回左边
+     *
+     * @return
+     */
+    private static char retLeft(String str) {
+        char ch = 0;
+        for (Map.Entry<Character, List<String>> map : produce.entrySet()) {
+            ch=map.getKey();
+            for (String value : map.getValue()) {
+                if(value.length()!=str.length()){
+                    continue;
+                }
+                int i;
+                for (i = 0; i < str.length(); i++) {
+
+                    if (str.charAt(i)>=65&&str.charAt(i)<=90){
+                        if(value.charAt(i)>=65&&value.charAt(i)<=90){
+                        }
+                        else{
+                            break;
+                        }
+                    }
+                    else{
+                        if(value.charAt(i)!=str.charAt(i)){
+                            break;
+                        }
+                    }
+                }
+                if(i==str.length()){
+                    return ch;
+                }
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * 将字符数组转换成字符串
+     * @param list
+     * @return
+     */
+    public static String replaceToString(List<Character> list){
+        StringBuffer a = new StringBuffer();
+        for(Character value : list){
+            if(value!=','&&value!='['&&value!=']'){
+                a.append(value);
+            }
+        }
+        return a.toString();
+    }
+
+    /**
+     * 算符优先分析过程
+     * 使用一个符号栈S，用它寄存终结符和非终结符,k代表符号栈S的深度
+     * 在正常情况下，算法工作完毕时，符号栈S应呈现:#N#
+     */
+    public static void analysisProcess() {
+        int status=0;
+        int count = 0;
+        int k = 0;
+        int j = 0;
+        int step = 0;
+        String gui=null;
+        System.out.println("请输入要分析的句子(注意:必须以'#'结束)");
+        String sentence = null;
+        sentence = in.nextLine();
+        List<Character> listStack = new ArrayList<>();
+        System.out.printf("%-8s%-20s%-8s%-10s%-8s\n","步骤","栈","a","剩余串","操作");
+        listStack.add('#');
+        char a = sentence.charAt(step++);
+        do {
+            if (status == 0) {
+                if(count!=0) {
+                    System.out.printf("%-8s\n%-8d %-20s %-8c %-10s", "移进", count, replaceToString(listStack), a, sentence.substring(step));
+                }else{
+                    System.out.printf("%-8d %-20s %-8c %-10s",count, replaceToString(listStack), a, sentence.substring(step));
+                }
+            }else{
+                System.out.printf("%-8s\n%-8d %-20s %-8c %-10s",gui,count, replaceToString(listStack), a, sentence.substring(step));
+            }
+            char ch = listStack.get(k);
+            if (isEnd(ch)) {
+                j = k;
+            } else if (j >= 1) {
+                j = k - 1;
+            }
+            char temp = 0;
+            if (matrix.get(listStack.get(j) + "" + a) != null) {
+                while (matrix.get(listStack.get(j) + "" + a).equals('>')) {
+                    if(listStack.size()==2&&a=='#'){
+                        break;
+                    }
+                    StringBuffer judge = new StringBuffer();
+                    do {
+                        temp = listStack.get(j);
+                        if (isEnd(listStack.get(j - 1))) {
+                            j = j - 1;
+                        } else {
+                            j = j - 2;
+                        }
+                    } while (!matrix.get(listStack.get(j) + "" + temp).equals('<'));
+                    for (int i = j + 1; i < listStack.size(); i++) {
+                        judge.append(listStack.get(i));
+                    }
+                    int te = listStack.size();
+                    for (int t = j + 1; t < te; t++) {
+                        listStack.remove(j+1);
+                    }
+                    char res = retLeft(judge.toString());
+                    if (res != 0) {
+                        count++;
+                        k = j + 1;
+                        listStack.add(res);
+                        status=1;
+                        gui = "用"+res+"->"+judge.toString()+"规约";
+                        if (status == 0) {
+                            System.out.printf("%-8s\n%-8d %-20s %-8c %-10s","移进",count, replaceToString(listStack), a, sentence.substring(step));
+                        }else{
+                            System.out.printf("%-8s\n%-8d %-20s %-8c %-10s",gui,count, replaceToString(listStack), a, sentence.substring(step));
+                        }
+                    }
+                }
+            }
+            if (matrix.get(listStack.get(j) + "" + a).equals('<') || matrix.get(listStack.get(j) + "" + a).equals('=')) {
+                count++;
+                k++;
+                status=0;
+                listStack.add(a);
+            } else {
+                System.out.println("error!");
+            }
+            if(listStack.size()==2&&a=='#'){
+                break;
+            }
+            if(step<sentence.length()) {
+                a = sentence.charAt(step++);
+            }
+            else{
+                break;
+            }
+        } while (listStack.size() != 2 || a != '#');
+        System.out.printf("%-8s\n","分析成功");
+    }
+
     public static void main(String[] args) {
         int flag = 1;
         String a;
@@ -162,6 +477,10 @@ public class analyze {
                 input.clear();
             }
         }
+        getNoEnd();
+        getProduce();
         DisplayFirstVT_LastVT();
+        priorityMatrix();
+        analysisProcess();
     }
 }
