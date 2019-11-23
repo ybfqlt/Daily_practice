@@ -16,20 +16,39 @@ import java.util.*;
  * @Created by xns
  */
 public class analyze {
+    /**
+     * FIRSTVT集合
+     */
     private static Map<Character, Set<Character>> firstVt = new HashMap<>();
+    /**
+     * LASTVT集合
+     */
     private static Map<Character, Set<Character>> lastVt = new HashMap<>();
+    /**
+     * 输入的文法
+     */
     private static List<String> input = new ArrayList<>();
 
-    //终结符
+    /**
+     * 终结符
+     */
     private static Set<Character> End = new LinkedHashSet<>();
 
-    //非终结符
+    /**
+     *非终结符
+     */
     private static Set<Character> NoEnd = new LinkedHashSet<>();
 
+    /**
+     * 算符矩阵
+     */
     private static Map<String, Character> matrix = new HashMap<>();
 
     private static Scanner in = new Scanner(System.in);
 
+    /**
+     * 文法的左右分割一一对应
+     */
     private static Map<Character, List<String>> produce = new HashMap<>();
 
 
@@ -150,9 +169,7 @@ public class analyze {
             String temp = input.get(i);
             for (int j = 3; j < temp.length(); j++) {
                 if (temp.charAt(j) < 65 || temp.charAt(j) > 90 && temp.charAt(j) != '|') {
-//                    if(temp.charAt(j)<97||temp.charAt(j)>122) {
                     End.add(temp.charAt(j));
-//                    }
                 }
             }
         }
@@ -237,9 +254,9 @@ public class analyze {
         }
         matrix.put("##", '=');
 
-//        for (Map.Entry<String, Character> entry : matrix.entrySet()) {
-//            System.out.println(entry.getKey()+"   "+entry.getValue());
-//        }
+/*        for (Map.Entry<String, Character> entry : matrix.entrySet()) {
+            System.out.println(entry.getKey()+"   "+entry.getValue());
+        }*/
         getEnd();
         System.out.println("\n构造的算符优先关系表如下:");
         int kong = 0;
@@ -370,7 +387,7 @@ public class analyze {
 
     /**
      * 算符优先分析过程
-     * 使用一个符号栈S，用它寄存终结符和非终结符,k代表符号栈S的深度
+     * 使用一个符号栈，用它寄存终结符和非终结符,k代表符号栈的深度
      * 在正常情况下，算法工作完毕时，符号栈S应呈现:#N#
      */
     public static void analysisProcess() {

@@ -19,9 +19,12 @@ class Block implements Serializable {
      * 开始位置
      */
     Integer start;
+    /**
+     * 结束位置
+     */
     Integer end;
     /**
-     * 对于内存是否分配,对于进程是否分配编号
+     * 对于内存是否分配,对于进程则为所分配的分区的编号
      */
     Integer status;
 
@@ -73,8 +76,6 @@ class Block implements Serializable {
     public void setStatus(Integer status) {
         this.status = status;
     }
-
-
 }
 
 class blockCompare implements Comparator<Block> {
@@ -99,6 +100,13 @@ public class Neicun {
 
     static Scanner in = new Scanner(System.in);
 
+    /**
+     * 分配的进程入队
+     * @param n
+     * @param flag
+     * @param start0
+     * @param length0
+     */
     public static void pushProcess(int n, Integer flag, int start0, int length0) {
         int j = 1;
         if (flag != -1) {
@@ -110,20 +118,26 @@ public class Neicun {
         }
     }
 
+    /**
+     * 打印空闲分区情况
+     */
     public static void printMemory() {
+        System.out.printf("%-10s %-10s%-10s%-10s\n","区号","起始地址","长度","结束地址");
         memory.forEach(item -> {
             if (item.getStatus() == 0) {
-                System.out.println("区号  起始地址  长度  结束地址  ");
-                System.out.println(item.getId() + "     " + item.getStart() + "      " + item.getLength() + "       " + item.getEnd());
+                System.out.printf("%-10d  %-10d  %-10d  %-10d\n",item.getId(),item.getStart(),item.getLength(),item.getEnd());
             }
         });
     }
 
 
+    /**
+     * 打印进程情况
+     */
     public static void printProcess() {
-        System.out.println("进程编号 分配分区编号  起始位置  长度   终止位置");
+        System.out.printf("%-10s %-10s %-10s%-10s%-10s\n","进程编号","分配分区编号","起始位置","长度","终止位置");
         process.forEach(item -> {
-            System.out.println(item.getId() + "       " + item.getStatus() + "         " + item.getStart() + "        " + item.getLength() + "        " + item.getEnd());
+            System.out.printf("%-10d  %-10d  %-10d  %-10d  %-10d\n",item.getId(),item.getStatus(),item.getStart(),item.getLength(),item.getEnd());
         });
     }
 
@@ -154,6 +168,13 @@ public class Neicun {
         }
     }
 
+    /**
+     * 深度copy
+     * @param src
+     * @return
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     public static LinkedList<Block> deepCopy(LinkedList<Block> src) throws IOException, ClassNotFoundException {
         ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
         ObjectOutputStream out = new ObjectOutputStream(byteOut);
@@ -229,6 +250,10 @@ public class Neicun {
         }
     }
 
+    /**
+     * 分区回收
+     * @param num
+     */
     public static void recycle(int num) {
         int t = 0, f = 0;
         for (int i = 0; i < process.size(); i++) {
@@ -241,26 +266,30 @@ public class Neicun {
                 f = i;
             }
         }
-        if (memory.get(f).getEnd().equals(memory.get(f + 1).getStart())) {
-            memory.get(f).setEnd(memory.get(f + 1).getEnd());
-            memory.get(f).setLength(memory.get(f).getLength() + memory.get(f + 1).getLength());
-            memory.get(f).setStatus(0);
-            memory.remove(f + 1);
-        } else if (f - 1 > 0) {
-            Block h = memory.get(f - 1);
-            Block p = memory.get(f);
-            if (h.getStatus() == 1) {
-                Block block = new Block(h.getId() + 1, process.get(t).getLength(), h.getEnd(), h.getEnd() + p.getLength(), 0);
-                memory.add(f, block);
-            } else {
-                memory.get(f - 1).setEnd(p.getEnd());
-                memory.get(f - 1).setLength(h.getLength() + p.getLength());
-                memory.get(f - 1).setStatus(0);
+        if(process.get(t).getStatus()!=0&&(process.get(t).getStart().equals(memory.get(f-1).getEnd())||process.get(t).getStart().equals(memory.get(f).getEnd()))){
+            if(process.get(t).getStart().equals(memory.get(f-1).getEnd())){
+                memory.get(f - 1).setLength(memory.get(f - 1).getLength() + process.get(t).getLength());
+                memory.get(f - 1).setEnd(process.get(t).getEnd());
+            }else{
+                memory.get(f).setLength(memory.get(f).getLength() + process.get(t).getLength());
+                memory.get(f).setEnd(process.get(t).getEnd());
+            }
+            if(process.get(t).getEnd().equals(memory.get(f).getStart())){
+                memory.get(f-1).setLength(memory.get(f-1).getLength()+memory.get(f).getLength());
+                memory.get(f-1).setEnd(memory.get(f).getEnd());
                 memory.remove(f);
             }
-        } else {
-            Block block = new Block(0, process.get(t).getLength(), 0, memory.get(f + 1).getStart(), 0);
-            memory.add(f, block);
+        }else{
+            if(process.get(t).getEnd().equals(memory.get(f).getStart())){
+                memory.get(f).setStart(process.get(t).getStart());
+                memory.get(f).setLength(memory.get(f).getLength()+process.get(t).getLength());
+            }else{
+                for(int i=memory.get(f+1).getId();i<memory.size();i++){
+                    memory.get(i).setId(memory.get(i).getId()+1);
+                }
+                Block block = new Block(process.get(t).getStatus()+1,process.get(t).getLength(),process.get(t).getStart(),process.get(t).getEnd(),0);
+                memory.add(process.get(t).getStatus()+1,block);
+            }
         }
         process.remove(t);
     }
