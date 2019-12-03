@@ -2,13 +2,22 @@ package com.bianyiyuanli.suanfuyouxian;
 
 import java.util.*;
 
+
+
 /**
- * S->v=E|E?|l
- * E->E+T|E-T|T
- * T->T*F|T/F|F
- * F->(E)|v|c
+ * E->TE'
+ * E'->+TE'|ε
+ * T->FT'
+ * T'->*FT'|ε
+ * F->(E)|i
  */
 
+/**
+ * E->E+T|T
+ * T->T*F|F
+ * F->P^F|P
+ * P->(E)|i
+ */
 /**
  * @Classname analyze
  * @Description TODO
@@ -16,6 +25,7 @@ import java.util.*;
  * @Created by xns
  */
 public class analyze {
+
     /**
      * FIRSTVT集合
      */
@@ -65,17 +75,21 @@ public class analyze {
         }
         for (i = 3; i < str.length(); i++) {
             if (str.charAt(i) < 65 || str.charAt(i) > 90) {
+                //P->a.....，即以终结符开头，该终结符入Firstvt
                 if ((str.charAt(i - 1) == '>' && str.charAt(i - 2) == '-') || str.charAt(i - 1) == '|') {
                     fvt.add(str.charAt(i));
                 }
+                //P->Qa....，即先以非终结符开头，紧跟终结符，则终结符入Firstvt
                 if ((str.charAt(i - 2) == '|' || (str.charAt(i - 2) == '>' && str.charAt(i - 3) == '-')) && str.charAt(i - 1) >= 65 && str.charAt(i - 1) <= 90) {
                     fvt.add(str.charAt(i));
                 }
             }
+            //若有P->Q.....，即以非终结符开头，该非终结符的Firstvt加入P的Firstvt
             if (str.charAt(i - 1) == '|' && str.charAt(i) >= 65 && str.charAt(i) <= 90) {
                 if (str.charAt(i) == str.charAt(0)) {
                     continue;
                 }
+                //递归
                 getFirstVT(str.charAt(i), fvt);
             }
         }
@@ -94,15 +108,18 @@ public class analyze {
         }
         for (i = 3; i < str.length(); i++) {
             if (str.charAt(i) < 65 || str.charAt(i) > 90) {
+                //P->....aQ，即先以非终结符结尾，前面是终结符，则终结符入Lastvt,Q处于产生式最后一位的情况
                 if (i == str.length() - 1 || (i == str.length() - 2 && str.charAt(i + 1) >= 65 && str.charAt(i + 1) <= 90 && str.charAt(i) != '|' && (str.charAt(i) != '>' && str.charAt(i) != '-'))) {
                     lvt.add(str.charAt(i));
                 }
                 if (i < str.length() - 2) {
+                    //P->....aQ，即先以非终结符结尾，前面是终结符，则终结符入Lastvt
                     if (str.charAt(i + 1) == '|' || (str.charAt(i + 2) == '|' && str.charAt(i + 1) >= 65 && str.charAt(i + 1) <= 90)) {
                         lvt.add(str.charAt(i));
                     }
                 }
             } else {
+                //P->....Q，即以非终结符结尾，该非终结符的Lastvt入P的Lastvt
                 if (i == str.length() - 1) {
                     if (str.charAt(i) == str.charAt(0)) {
                         continue;
@@ -112,6 +129,7 @@ public class analyze {
                     if (str.charAt(i) == str.charAt(0)) {
                         continue;
                     }
+                    //P->....Q，即以非终结符结尾，该非终结符的Lastvt入P的Lastvt
                     getLastVT(str.charAt(i), lvt);
                 }
             }
@@ -191,7 +209,7 @@ public class analyze {
     }
 
     /**
-     * 将产生式的左部和右部分离
+     * 将每一行的文法分离,如E->E+T|T分离成E和E+T,T
      */
     private static void getProduce() {
         for (int i = 0; i < input.size(); i++) {
@@ -203,6 +221,7 @@ public class analyze {
                     a.append(str.charAt(j));
                 } else {
                     list.add(a.toString());
+                    //清空a
                     a.delete(0, a.length());
                 }
             }
@@ -212,8 +231,18 @@ public class analyze {
     }
 
     /**
+     * 错误
+     */
+    public static void partError() {
+        matrix.put(")(", 'b');
+        matrix.put("((", 'b');
+        matrix.put("(#", 'a');
+    }
+
+
+    /**
      * 构造算符优先矩阵并打印
-     *
+     *　用Map<String,Character>存,String中存优先变得行值和列值,Character表示String中所存行列的大小关系如"++"表示行为'+',列为'+'的时候,关系为Character中的值
      * @return
      */
     private static void priorityMatrix() {
@@ -252,6 +281,14 @@ public class analyze {
         for (Character value : coll1) {
             matrix.put(value + "" + '#', '>');
         }
+        partError();
+        for (Character value : End) {
+            for (Character value1 : End) {
+                if (matrix.get(value + "" + value1) == null) {
+                    matrix.put(value + "" + value1, 'b');
+                }
+            }
+        }
         matrix.put("##", '=');
 
 /*        for (Map.Entry<String, Character> entry : matrix.entrySet()) {
@@ -287,7 +324,7 @@ public class analyze {
 
     /**
      * 判断其是不是算符文法
-     *
+     *如果没有连个连续非终结符号相连的就是算符优先文法
      * @return
      */
     private static boolean isOperator() {
@@ -341,28 +378,26 @@ public class analyze {
     private static char retLeft(String str) {
         char ch = 0;
         for (Map.Entry<Character, List<String>> map : produce.entrySet()) {
-            ch=map.getKey();
+            ch = map.getKey();
             for (String value : map.getValue()) {
-                if(value.length()!=str.length()){
+                if (value.length() != str.length()) {
                     continue;
                 }
                 int i;
                 for (i = 0; i < str.length(); i++) {
 
-                    if (str.charAt(i)>=65&&str.charAt(i)<=90){
-                        if(value.charAt(i)>=65&&value.charAt(i)<=90){
-                        }
-                        else{
+                    if (str.charAt(i) >= 65 && str.charAt(i) <= 90) {
+                        if (value.charAt(i) >= 65 && value.charAt(i) <= 90) {
+                        } else {
                             break;
                         }
-                    }
-                    else{
-                        if(value.charAt(i)!=str.charAt(i)){
+                    } else {
+                        if (value.charAt(i) != str.charAt(i)) {
                             break;
                         }
                     }
                 }
-                if(i==str.length()){
+                if (i == str.length()) {
                     return ch;
                 }
             }
@@ -375,10 +410,10 @@ public class analyze {
      * @param list
      * @return
      */
-    public static String replaceToString(List<Character> list){
+    public static String replaceToString(List<Character> list) {
         StringBuffer a = new StringBuffer();
-        for(Character value : list){
-            if(value!=','&&value!='['&&value!=']'){
+        for (Character value : list) {
+            if (value != ',' && value != '[' && value != ']') {
                 a.append(value);
             }
         }
@@ -386,33 +421,62 @@ public class analyze {
     }
 
     /**
+     * 错误处理
+     * @param a
+     * @param listStack
+     * @param str
+     * @param i
+     */
+    public static void error(Character a,List<Character> listStack,String str,int i){
+        switch (a){
+            case 'a':
+                System.out.println("非法左括号!");
+                listStack.remove(listStack.size());
+                break;
+            case 'b':
+                System.out.println("缺少运算符!");
+                StringBuilder sb = new StringBuilder(str);
+                sb.insert(i,'+');
+                str = sb.toString();
+                break;
+            case 'c':
+                System.out.println("缺少表达式!");
+                break;
+            default:
+                break;
+        }
+    }
+    /**
      * 算符优先分析过程
      * 使用一个符号栈，用它寄存终结符和非终结符,k代表符号栈的深度
      * 在正常情况下，算法工作完毕时，符号栈S应呈现:#N#
      */
     public static void analysisProcess() {
-        int status=0;
+        int status = 0;
         int count = 0;
         int k = 0;
         int j = 0;
         int step = 0;
-        String gui=null;
-        System.out.println("请输入要分析的句子(注意:必须以'#'结束)");
+        String gui = null;
+        System.out.println("请输入要分析的句子(注意:记得以'#'结束)");
         String sentence = null;
         sentence = in.nextLine();
+        if (sentence.charAt(sentence.length() - 1) != '#') {
+            sentence = sentence + "#";
+        }
         List<Character> listStack = new ArrayList<>();
-        System.out.printf("%-8s%-20s%-8s%-10s%-8s\n","步骤","栈","a","剩余串","操作");
+        System.out.printf("%-8s%-20s%-8s%-10s%-8s\n", "步骤", "栈", "a读入", "剩余串", "操作");
         listStack.add('#');
         char a = sentence.charAt(step++);
         do {
             if (status == 0) {
-                if(count!=0) {
+                if (count != 0) {
                     System.out.printf("%-8s\n%-8d %-20s %-8c %-10s", "移进", count, replaceToString(listStack), a, sentence.substring(step));
-                }else{
-                    System.out.printf("%-8d %-20s %-8c %-10s",count, replaceToString(listStack), a, sentence.substring(step));
+                } else {
+                    System.out.printf("%-8d %-20s %-8c %-10s", count, replaceToString(listStack), a, sentence.substring(step));
                 }
-            }else{
-                System.out.printf("%-8s\n%-8d %-20s %-8c %-10s",gui,count, replaceToString(listStack), a, sentence.substring(step));
+            } else {
+                System.out.printf("%-8s\n%-8d %-20s %-8c %-10s", gui, count, replaceToString(listStack), a, sentence.substring(step));
             }
             char ch = listStack.get(k);
             if (isEnd(ch)) {
@@ -422,8 +486,9 @@ public class analyze {
             }
             char temp = 0;
             if (matrix.get(listStack.get(j) + "" + a) != null) {
+                //规约
                 while (matrix.get(listStack.get(j) + "" + a).equals('>')) {
-                    if(listStack.size()==2&&a=='#'){
+                    if (listStack.size() == 2 && a == '#') {
                         break;
                     }
                     StringBuffer judge = new StringBuffer();
@@ -440,44 +505,67 @@ public class analyze {
                     }
                     int te = listStack.size();
                     for (int t = j + 1; t < te; t++) {
-                        listStack.remove(j+1);
+                        listStack.remove(j + 1);
                     }
                     char res = retLeft(judge.toString());
                     if (res != 0) {
                         count++;
                         k = j + 1;
                         listStack.add(res);
-                        status=1;
-                        gui = "用"+res+"->"+judge.toString()+"规约";
+                        status = 1;
+                        gui = "用" + res + "->" + judge.toString() + "规约";
                         if (status == 0) {
-                            System.out.printf("%-8s\n%-8d %-20s %-8c %-10s","移进",count, replaceToString(listStack), a, sentence.substring(step));
-                        }else{
-                            System.out.printf("%-8s\n%-8d %-20s %-8c %-10s",gui,count, replaceToString(listStack), a, sentence.substring(step));
+                            System.out.printf("%-8s\n%-8d %-20s %-8c %-10s", "移进", count, replaceToString(listStack), a, sentence.substring(step));
+                        } else {
+                            System.out.printf("%-8s\n%-8d %-20s %-8c %-10s", gui, count, replaceToString(listStack), a, sentence.substring(step));
                         }
                     }
                 }
             }
+            //移进
             if (matrix.get(listStack.get(j) + "" + a).equals('<') || matrix.get(listStack.get(j) + "" + a).equals('=')) {
                 count++;
                 k++;
-                status=0;
+                status = 0;
                 listStack.add(a);
-            } else {
-                System.out.println("error!");
+            }else{
+                switch (matrix.get(listStack.get(j) + "" + a)){
+                    case 'a':
+                        System.out.print("非法左括号! ");
+                        listStack.remove(listStack.size());
+                        break;
+                    case 'b':
+                        System.out.print("缺少运算符! ");
+                        StringBuilder sb = new StringBuilder(sentence);
+                        sb.insert(step-1,'+');
+                        --step;
+                        sentence = sb.toString();
+                        break;
+                    case 'c':
+                        System.out.print("缺少表达式! ");
+                        return;
+                    default:
+                        break;
+                }
+//                error(matrix.get(listStack.get(j) + "" + a),listStack,sentence,step);
             }
-            if(listStack.size()==2&&a=='#'){
+            if (listStack.size() == 2 && a == '#') {
                 break;
             }
-            if(step<sentence.length()) {
+            if (step < sentence.length()) {
                 a = sentence.charAt(step++);
-            }
-            else{
+            } else {
                 break;
             }
         } while (listStack.size() != 2 || a != '#');
-        System.out.printf("%-8s\n","分析成功");
+        System.out.printf("%-8s\n", "分析成功");
     }
 
+
+    /**
+     * 主函数
+     * @param args
+     */
     public static void main(String[] args) {
         int flag = 1;
         String a;
@@ -494,6 +582,7 @@ public class analyze {
                 input.clear();
             }
         }
+        getEnd();
         getNoEnd();
         getProduce();
         DisplayFirstVT_LastVT();
