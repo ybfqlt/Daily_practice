@@ -23,28 +23,28 @@ public class test1 {
 //        concurrentHashMap.put("key", null);
 //        concurrentHashMap.containsKey(null);
 //
-//        HashMap<String, String> hashMap = new HashMap<>(1);
-//        hashMap.put(null, "aa");
-//        hashMap.put("key", null);
+        HashMap<String, String> hashMap = new HashMap<>(1);
+        hashMap.put(null, "aa");
+        hashMap.put("key", null);
 
 
-        Hashtable<String, String> hashtable = new Hashtable<>(1);
-        hashtable.put("aa", "aa");
-        hashtable.put("aaa", "a");
-        int i=0;
-        Enumeration<String> enumeration = hashtable.keys();
-        Enumeration<String> enumeration1;
-        Enumeration<String> enumeration2;
-//        (enumeration1 = hashtable.keys())
-        while(enumeration.hasMoreElements()){
-            System.out.println(enumeration);
-            i++;
-//            (enumeration2 = hashtable.keys())
-            System.out.println(enumeration.nextElement());
-           System.out.println(enumeration);
-            if(i==10){
-                return;
-            }
-        }
+//        Hashtable<String, String> hashtable = new Hashtable<>(1);
+//        hashtable.put("aa", "aa");
+//        hashtable.put("aaa", "a");
+//        int i=0;
+//        Enumeration<String> enumeration = hashtable.keys();
+//        Enumeration<String> enumeration1;
+//        Enumeration<String> enumeration2;
+////        (enumeration1 = hashtable.keys())
+//        while(enumeration.hasMoreElements()){
+//            System.out.println(enumeration);
+//            i++;
+////            (enumeration2 = hashtable.keys())
+//            System.out.println(enumeration.nextElement());
+//           System.out.println(enumeration);
+//            if(i==10){
+//                return;
+//            }
+//        }
     }
 }
