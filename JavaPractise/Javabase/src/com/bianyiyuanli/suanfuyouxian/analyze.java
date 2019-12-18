@@ -75,21 +75,17 @@ public class analyze {
         }
         for (i = 3; i < str.length(); i++) {
             if (str.charAt(i) < 65 || str.charAt(i) > 90) {
-                //P->a.....，即以终结符开头，该终结符入Firstvt
                 if ((str.charAt(i - 1) == '>' && str.charAt(i - 2) == '-') || str.charAt(i - 1) == '|') {
                     fvt.add(str.charAt(i));
                 }
-                //P->Qa....，即先以非终结符开头，紧跟终结符，则终结符入Firstvt
                 if ((str.charAt(i - 2) == '|' || (str.charAt(i - 2) == '>' && str.charAt(i - 3) == '-')) && str.charAt(i - 1) >= 65 && str.charAt(i - 1) <= 90) {
                     fvt.add(str.charAt(i));
                 }
             }
-            //若有P->Q.....，即以非终结符开头，该非终结符的Firstvt加入P的Firstvt
             if (str.charAt(i - 1) == '|' && str.charAt(i) >= 65 && str.charAt(i) <= 90) {
                 if (str.charAt(i) == str.charAt(0)) {
                     continue;
                 }
-                //递归
                 getFirstVT(str.charAt(i), fvt);
             }
         }
@@ -108,18 +104,15 @@ public class analyze {
         }
         for (i = 3; i < str.length(); i++) {
             if (str.charAt(i) < 65 || str.charAt(i) > 90) {
-                //P->....aQ，即先以非终结符结尾，前面是终结符，则终结符入Lastvt,Q处于产生式最后一位的情况
                 if (i == str.length() - 1 || (i == str.length() - 2 && str.charAt(i + 1) >= 65 && str.charAt(i + 1) <= 90 && str.charAt(i) != '|' && (str.charAt(i) != '>' && str.charAt(i) != '-'))) {
                     lvt.add(str.charAt(i));
                 }
                 if (i < str.length() - 2) {
-                    //P->....aQ，即先以非终结符结尾，前面是终结符，则终结符入Lastvt
                     if (str.charAt(i + 1) == '|' || (str.charAt(i + 2) == '|' && str.charAt(i + 1) >= 65 && str.charAt(i + 1) <= 90)) {
                         lvt.add(str.charAt(i));
                     }
                 }
             } else {
-                //P->....Q，即以非终结符结尾，该非终结符的Lastvt入P的Lastvt
                 if (i == str.length() - 1) {
                     if (str.charAt(i) == str.charAt(0)) {
                         continue;
@@ -129,7 +122,6 @@ public class analyze {
                     if (str.charAt(i) == str.charAt(0)) {
                         continue;
                     }
-                    //P->....Q，即以非终结符结尾，该非终结符的Lastvt入P的Lastvt
                     getLastVT(str.charAt(i), lvt);
                 }
             }
