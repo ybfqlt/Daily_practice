@@ -1,7 +1,11 @@
 package com.bianyiyuanli;
 
 
+import com.sun.deploy.security.BadCertificateDialog;
+
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -13,10 +17,10 @@ import java.util.Scanner;
 public class cifa {
     private String keyWord[] = {"auto","break","case","char","const","continue","default",
             "do","double","else","enum","float","for","goto","if","int","long","register","return","short",
-            "signed","sizeof","static","struct", "switch","typedef","union","unsigned","void","volatile","while"};;
+            "signed","sizeof","static","struct", "switch","typedef","union","unsigned","void","volatile","while"};
     private char ch;
 
-    private String[] table= new String[500];
+    private List<String> table = new ArrayList<>();
 
 
     private Integer biao = 1;
@@ -40,6 +44,14 @@ public class cifa {
         }
         return false;
     }
+    void printTable(){
+        System.out.println("=============单词分类表===============");
+        System.out.printf("%-10s%8s\n","单词符号","种别编码");
+        for(int i=0;i<table.size();i++){
+            System.out.printf("%-10s%8d\n",table.get(i),i);
+        }
+    }
+
 
     /**
      * 判断是否是字母
@@ -69,31 +81,31 @@ public class cifa {
         }
     }
 
-//    String filter(char[] str) {
-//        System.out.println(str);
-//        StringBuffer buf = new StringBuffer("");
-//        for (int i = 0; i < str.length; i++) {
-//            if (str[i] == '/' && str[i + 1] == '/') {
-//                while (str[i] != '\n') {
-//                    i++;
-//                }
-//            }
-//            if (str[i] == '/' && str[i + 1] == '*') {
-//                i += 2;
-//                while (str[i] != '*' || str[i + 1] != '/') {
-//                    i++;
-//                    if (i == str.length) {
-//                        System.out.println("注释出错，不能正确分析!");
-//                        System.exit(0);
-//                    }
-//                }
-//                i += 2;
-//            }
-//            buf.append(str[i]);
-//        }
-//        System.out.println(buf.toString());
-//        return buf.toString();
-//    }
+    String filter(char[] str) {
+        System.out.println(str);
+        StringBuffer buf = new StringBuffer("");
+        for (int i = 0; i < str.length; i++) {
+            if (str[i] == '/' && str[i + 1] == '/') {
+                while (str[i] != '\n') {
+                    i++;
+                }
+            }
+            if (str[i] == '/' && str[i + 1] == '*') {
+                i += 2;
+                while (str[i] != '*' || str[i + 1] != '/') {
+                    i++;
+                    if (i == str.length) {
+                        System.out.println("注释出错，不能正确分析!");
+                        System.exit(0);
+                    }
+                }
+                i += 2;
+            }
+            buf.append(str[i]);
+        }
+        System.out.println(buf.toString());
+        return buf.toString();
+    }
 
     /**
      * 词法分析
@@ -101,8 +113,8 @@ public class cifa {
      */
     void analyze(char[] str)
     {
-        table[0]="标识符";
-        table[1]="常数";
+        table.add("标识符");
+        table.add("常数");
 //        String buf = filter(str1);
 //        char[] str=buf.toCharArray();
         String arr = "";
@@ -119,13 +131,13 @@ public class cifa {
                 i--;
                 if(isKey(arr)){
                     //关键字
-                    table[flag++]=flag+":"+arr;
-                    System.out.println("<"+arr+" class:"+(flag++) +" values:null>");
+                    table.add(arr);
+                    System.out.printf("%-10s[%-5d%5s]\n",arr,flag++,"null");
                 }
                 else{
                     //标识符
-                    table[flag++]=flag+":"+arr;
-                    System.out.println("<"+arr+" class:1"+"  values:"+(biao++)+">");
+//                    table[flag++]=flag+":"+arr;
+                    System.out.printf("%-10s[%-5d%5d]\n",arr,0,biao++);
                 }
             }
             else if(isDigit(ch)||(ch == '.'))
@@ -139,7 +151,7 @@ public class cifa {
                     ch = str[++i];
                 }
                 //属于无符号常数
-                System.out.println("<"+arr+" class:1"+"  values:"+(chang++)+">");
+                System.out.printf("%-10s[%-5d%5d]\n",arr,1,chang++);
             }
             else {
                 switch(ch){
@@ -156,15 +168,21 @@ public class cifa {
                             }
                             if(temp1.contains("\"")){
                                 String temp2 = ""+ch+str[++i];
-                                System.out.println("<"+temp2+" ,"+" 格式表明符>");
+                                System.out.printf("%-10s[%-5s]\n",temp2,"格式表明符");
                             }
                             else{
-                                table[flag++]=""+ch;
-                                System.out.println("<"+ch+" class:"+(flag++) +" values:null>");
+                                table.add(""+ch);
+                                System.out.printf("%-10c[%-5d%5s]\n",ch,flag++,"null");
                             }
                             break;
                         case '+':
                         case '-':
+                            if(str[++i] == ch){
+                                String te = ch+""+ch;
+                                table.add(te);
+                                System.out.printf("%-10s[%-5d%5s]\n",te,flag++,"null");
+                                break;
+                            }
                         case '*':
                         case '/':
                             String temp;
@@ -174,11 +192,12 @@ public class cifa {
                                 temp=temp+ch;
                             } else {
                                 ch = str[--i];
-                                table[flag++]=""+ch;
-                                System.out.println("<"+ch+" class:"+(flag++) +" values:null>");
+                                table.add(""+ch);
+                                System.out.printf("%-10c[%-5d%5s]\n",ch,flag++,"null");
                             }
-                            table[flag++]=temp;
-                            System.out.println("<"+temp+" class:"+(flag++) +" values:null>");break;
+                            table.add(temp);
+                            System.out.printf("%-10s[%-5d%5s]\n",temp,flag++,"null");
+                            break;
                         /**
                         * 分界符
                         */
@@ -192,59 +211,61 @@ public class cifa {
                         case ';':
                         case '{':
                         case '}':
-                            table[flag++]=""+ch;
-                            System.out.println("<"+ch+" class:"+(flag++) +" values:null>");break;
+                            table.add(""+ch);
+                            System.out.printf("%-10c[%-5d%5s]\n",ch,flag++,"null");
+                            break;
                         /**
                         * 运算符
                         */
                         case '=':{
                             ch = str[++i];
                             if(ch == '=') {
-                                table[flag++]="==";
-                                System.out.println("<=="+" class:"+(flag++) +" values:null>");
+                                table.add("==");
+                                System.out.printf("%-10s[%-5d%5s]\n","==",flag++,"null");
                             } else {
-                                table[flag++]="=";
-                                System.out.println("<"+"="+" class:"+(flag++) +" values:null>");
+                                table.add("=");
+                                System.out.printf("%-10s[%-5d%5s]\n","=",flag++,"null");
                                 i--;
                             }
                         }break;
                         case ':':{
                             ch = str[++i];
                             if(ch == '=') {
-                                table[flag++]=":=";
-                                System.out.println("<"+":="+" class:"+(flag++) +" values:null>");
+                                table.add(":=");
+                                System.out.printf("%-10s[%-5d%5s]\n",":=",flag++,"null");
                             } else {
-                                table[flag++]=":";
-                                System.out.println("<"+":"+" class:"+(flag++) +" values:null>");
+                                table.add(":");
+                                System.out.printf("%-10s[%-5d%5s]\n",":",flag++,"null");
                                 i--;
                             }
                         }break;
                         case '>':{
                             ch = str[++i];
                             if(ch == '=') {
-                                table[flag++]=">=";
-                                System.out.println("<"+">="+" class:"+(flag++) +" values:null>");
+                                table.add(">=");
+                                System.out.printf("%-10s[%-5d%5s]\n",">=",flag++,"null");
                             } else {
-                                table[flag++]=">";
-                                System.out.println("<"+">"+" class:"+(flag++) +" values:null>");
+                                table.add(">");
+                                System.out.printf("%-10s[%-5d%5s]\n",">",flag++,"null");
                                 i--;
                             }
                         }break;
                         case '<':{
                             ch = str[++i];
                             if(ch == '=') {
-                                table[flag++]="<=";
-                                System.out.println("<"+"<="+" class:"+(flag++) +" values:null>");
+                                table.add("<=");
+                                System.out.printf("%-10s[%-5d%5s]\n","<=",flag++,"null");
                             } else {
-                                table[flag++]="<";
-                                System.out.println("<"+"<"+" class:"+(flag++) +" values:null>");
+                                table.add("<");
+                                System.out.printf("%-10s[%-5d%5s]\n","<",flag++,"null");
                                 i--;
                             }
                         }break;
                         /**
                         * 无识别
                         */
-                        default: System.out.println("<"+ch+" ,"+"  无识别符>");
+                        default:
+                            System.out.printf("%-10c[%-5s]\n",ch,"无识别符");
                     }
             }
         }
@@ -253,6 +274,7 @@ public class cifa {
         Scanner in = new Scanner(System.in);
         System.out.println("请输入文件名称:");
         String strFile = in.next();
+        cifa a = new cifa();
         /**
          * 定义一个file对象，用来初始化FileReader
          */
@@ -270,9 +292,10 @@ public class cifa {
             char[] buf = new char[length];
             reader.read(buf);
             reader.close();
-            new cifa().analyze(buf);
+           a.analyze(buf);
         }catch (FileNotFoundException e){
             System.out.println("没有那个文件或目录!");
         }
+        a.printTable();
     }
 }

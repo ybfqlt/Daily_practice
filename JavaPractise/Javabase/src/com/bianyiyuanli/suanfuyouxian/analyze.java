@@ -1,7 +1,5 @@
 package com.bianyiyuanli.suanfuyouxian;
 
-import java.util.*;
-
 
 
 /**
@@ -18,6 +16,9 @@ import java.util.*;
  * F->P^F|P
  * P->(E)|i
  */
+
+import java.util.*;
+
 /**
  * @Classname analyze
  * @Description TODO
