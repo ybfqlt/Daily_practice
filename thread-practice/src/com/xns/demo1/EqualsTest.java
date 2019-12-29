@@ -14,6 +14,7 @@ public class EqualsTest {
         };
 //        t.run();
         t.start();
+//        t.start();
         System.out.print("ping");
     }
 
