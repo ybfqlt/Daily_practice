@@ -1,0 +1,180 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="css/newadd.css" rel="stylesheet">
+<title>增加员工信息</title>
+<style>
+.table th, .table td {
+	text-align: center;
+	height: 30px;
+}
+#centerpos
+{
+    height:50px;
+    line-height:50px;
+    font-size:25px;
+    vertical-align: middle;
+    text-align: center;
+}
+</style>
+<script src="js/jquery-2.1.3.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+</head>
+<body>
+
+	<div id="centerpos" class="bg-primary">XXX影院管理系统</div>
+
+	<div class="row" style="padding:10px 10px">
+
+		<!-- 左导航栏 -->
+	<div class="col-md-2">
+		<div class="panel panel-primary">
+			  <div class="panel-heading">
+			    <h3 class="panel-title">导航</h3>
+			  </div>
+			  <div class="panel-body">
+				<table class="table table-hover">
+					<tr><td><img src="images/renyuan.png" width="24px">&nbsp;&nbsp;<a href="javascript:alert('到时候有例子!')">员工管理</a></td></tr>
+					<tr><td><img src="images/yingting.png" width="24px">&nbsp;&nbsp;<a href="javascript:alert('你们自己做!')">影厅管理</a></td></tr>
+					<tr><td><img src="images/zuowei.png" width="24px">&nbsp;&nbsp;<a href="javascript:alert('你们自己做!')">座位管理</a></td></tr>
+					<tr><td><img src="images/yingpian.png" width="24px">&nbsp;&nbsp;<a href="javascript:alert('可以不用做!')">影片管理</a></td></tr>
+					<tr><td><img src="images/dingpiao.png" width="24px">&nbsp;&nbsp;<a href="javascript:alert('可以不用做!')">订票管理</a></td></tr>
+				</table>
+			  </div>
+		</div>
+	</div>
+
+		<!-- 增加员工信息 -->
+		<div class="col-md-10" style="padding-top:10px">
+			<form name="myform" class="form-horizontal" role="form" action="" method="post">
+				<div class="form-group">
+					<label for="emp_no" class="col-sm-2 control-label">用户编号</label>
+					<div class="col-sm-4">
+						<input type="text" class="form-control" id="emp_no" name="emp_no" onblur="checkEmpNo()">
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="emp_name" class="col-sm-2 control-label">用户姓名</label>
+					<div class="col-sm-4">
+						<input type="text" class="form-control" id="emp_name" name="emp_name" onblur="checkEmpName()">
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="emp_tel_num" class="col-sm-2 control-label">电话号码</label>
+					<div class="col-sm-4">
+						<input type="tel" class="form-control" id="emp_tel_num" name="emp_tel_num" onblur="checkEmpTelNum()">
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="emp_addr" class="col-sm-2 control-label">地址</label>
+					<div class="col-sm-4">
+						<input type="text" class="form-control" id="emp_addr" name="emp_addr" onblur="checkEmpAddr()">
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="emp_email" class="col-sm-2 control-label">邮箱</label>
+					<div class="col-sm-4">
+						<input type="email" class="form-control" id="emp_email" name="emp_email" onblur="checkEmpEmail()">
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-2 control-label" style="color:red;font-weight: bold;"></div>
+					<div class="col-sm-4">
+						<button type="submit" class="btn btn-primary" onclick="return checkAll()">提  交</button>
+					</div>
+				</div>
+			</form>
+
+		</div>
+	</div>
+
+<script type="text/javascript">
+<!--
+function checkEmpNo()
+{
+    var reg=/^[a-zA-Z0-9]{6,20}$/;
+    var emp_no=document.myform.emp_no;
+    if(!reg.test(emp_no.value))
+    {
+        alert("请输入大小写字母和数字,长度6-20位!");
+        emp_no.focus();
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+}
+function checkEmpName()
+{
+    var reg=/^[\u4e00-\u9fa5]{2,10}$/;
+    var emp_name=document.myform.emp_name;
+    if(!reg.test(emp_name.value))
+    {
+        alert("请输入真实姓名,10字以内中文!");
+        emp_name.focus();
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+}
+function checkEmpTelNum()
+{
+    var reg=/^1[3-8][0-9]{9}$/;
+    var emp_tel_num=document.myform.emp_tel_num;
+    if(!reg.test(emp_tel_num.value))
+    {
+        alert("请输入11位正确手机号码!");
+        emp_tel_num.focus();
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+}
+function checkEmpAddr()
+{
+    var reg=/^.{2,30}$/;
+    var emp_addr=document.myform.emp_addr;
+    if(!reg.test(emp_addr.value))
+    {
+        alert("请输入地址,2到30字!");
+        emp_addr.focus();
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+}
+function checkEmpEmail()
+{
+    var reg=/^([a-zA-Z0-9_-])+@[a-zA-Z0-9_-]+((\.[a-z]{2,3}){1,2})$/;
+    var emp_email=document.myform.emp_email;
+    if(!reg.test(emp_email.value))
+    {
+        alert("请输入正确格式Email!");
+        emp_email.focus();
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+}
+function checkAll()
+{
+    if(!checkEmpNo() || !checkEmpName() || !checkEmpTelNum() || !checkEmpAddr() || !checkEmpEmail())
+        return false;
+    else
+        return true;
+}
+//-->
+</script>
+</body>
+</html>
