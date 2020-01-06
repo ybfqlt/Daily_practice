@@ -4,6 +4,7 @@
 
 <web-app>
   <display-name>Archetype Created Web Application</display-name>
+
   <servlet>
     <servlet-name>A</servlet-name>
     <servlet-class>com.test.A</servlet-class>
@@ -13,7 +14,8 @@
     <url-pattern>/a</url-pattern>
   </servlet-mapping>
 
+
   <welcome-file-list>
-    <welcome-file>image.html</welcome-file>
+    <welcome-file>index.jsp</welcome-file>
   </welcome-file-list>
 </web-app>
