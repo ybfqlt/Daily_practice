@@ -1,6 +1,5 @@
-package com.ltt.demo;
+package com.xns.springcloud.entities;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
@@ -9,7 +8,7 @@ import java.io.Serializable;
 
 /**
  * @Author: xns
- * @Date: 20-1-13 下午6:41
+ * @Date: 20-1-14 下午5:14
  */
 @SuppressWarnings("serial")
 @NoArgsConstructor
