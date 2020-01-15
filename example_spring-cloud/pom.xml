@@ -17,6 +17,7 @@
     <modules>
         <module>example-servicecloud-api</module>
         <module>servicecloud-provider-dept-8001</module>
+        <module>servicecloud-consumer-dept-80</module>
     </modules>
     <packaging>pom</packaging>
 

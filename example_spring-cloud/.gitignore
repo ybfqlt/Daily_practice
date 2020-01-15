@@ -3,3 +3,5 @@ example_spring-cloud.iml
 example-servicecloud-api.iml
 servicecloud-provider-dept-8001.iml
 target/
+servicecloud-consumer-dept-80.iml
+target/
