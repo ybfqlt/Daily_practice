@@ -25,8 +25,8 @@
         </dependency>
 
         <dependency>
-            <groupId>com.ltt</groupId>
-            <artifactId>servicecloud-api</artifactId>
+            <groupId>com.xns</groupId>
+            <artifactId>example-servicecloud-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -47,7 +47,7 @@
 
         <dependency>
             <groupId>com.alibaba</groupId>
-            <artifactId>druid</artifactId>
+            <artifactId>druid-spring-boot-starter</artifactId>
         </dependency>
 
         <dependency>
@@ -67,6 +67,15 @@
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.xml</include>
+                </includes>
+                <filtering>false</filtering>
+            </resource>
+        </resources>
         <finalName>servicecloud-provider-dept-8001</finalName>
         <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
             <plugins>

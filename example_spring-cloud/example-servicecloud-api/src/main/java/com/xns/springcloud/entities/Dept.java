@@ -1,5 +1,6 @@
 package com.xns.springcloud.entities;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
@@ -12,6 +13,7 @@ import java.io.Serializable;
  */
 @SuppressWarnings("serial")
 @NoArgsConstructor
+@AllArgsConstructor
 @Data
 @Accessors(chain=true) //链式写法
 public class Dept implements Serializable { //Dpet(Entity orm mysql->Dept(table)类表关系映射//必须序列化

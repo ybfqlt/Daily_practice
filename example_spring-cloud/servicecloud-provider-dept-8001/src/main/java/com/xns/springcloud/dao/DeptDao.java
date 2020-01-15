@@ -1,7 +1,8 @@
 package com.xns.springcloud.dao;
 
-import com.ltt.springcloud.entities.Dept;
+import com.xns.springcloud.entities.Dept;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
