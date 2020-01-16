@@ -8,3 +8,5 @@ target/
 target/
 servicecloud-consumer-dept-8011.iml
 servicecloud-eureka-7001.iml
+servicecloud-eureka-7002.iml
+servicecloud-eureka-7003.iml
