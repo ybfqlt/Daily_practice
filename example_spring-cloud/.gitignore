@@ -5,3 +5,6 @@ servicecloud-provider-dept-8001.iml
 target/
 servicecloud-consumer-dept-80.iml
 target/
+target/
+servicecloud-consumer-dept-8011.iml
+servicecloud-eureka-7001.iml

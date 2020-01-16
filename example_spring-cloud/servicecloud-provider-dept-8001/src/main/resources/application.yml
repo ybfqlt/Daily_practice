@@ -30,4 +30,9 @@ spring:
       use-global-data-source-stat: true
 
 
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:7001/eureka
+
 debug: true
