@@ -39,3 +39,11 @@ eureka:
     prefer-ip-address: true    #访问路径可以显示IP地址
 
 debug: true
+
+info:
+  app.name: xns-servicecloud
+  company.name: www.xns.com
+#  build.artifactId: '@project.artifactId@'
+#  build.version: '@project.version@'
+  build.artifactId: $project.artifactId$
+  build.version: $project.version$
