@@ -21,6 +21,8 @@
         <module>servicecloud-eureka-7001</module>
         <module>servicecloud-eureka-7002</module>
         <module>servicecloud-eureka-7003</module>
+        <module>servicecloud-provider-dept-8002</module>
+        <module>servicecloud-provider-dept-8003</module>
     </modules>
     <packaging>pom</packaging>
 

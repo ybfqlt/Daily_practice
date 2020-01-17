@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xns.springcloud.dao.DeptDao">
+    <resultMap id="BaseResultMap" type="com.xns.springcloud.entities.Dept">
+        <result column="deptno" property="deptno"/>
+        <result column="dname" property="dname"/>
+        <result column="db_source" property="db_source"/>
+    </resultMap>
+    <select id="findById" resultType="com.xns.springcloud.entities.Dept" parameterType="Long">
+        select deptno, dname, db_source
+        from dept
+        where deptno = #{deptno}
+    </select>
+    <select id="findAll" resultMap="BaseResultMap">
+        select deptno,dname,db_source
+        from dept;
+    </select>
+    <insert id="addDept" parameterType="com.xns.springcloud.entities.Dept">
+        INSERT INTO dept(dname, db_source)
+        values (#{dname}, database());
+    </insert>
+</mapper>

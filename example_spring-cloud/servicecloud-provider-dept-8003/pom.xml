@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>servicecloud-provider-dept-8001</artifactId>
+    <artifactId>servicecloud-provider-dept-8003</artifactId>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -87,19 +87,19 @@
 
     <build>
         <resources>
-<!--            <resource>-->
-<!--                <directory>src/main/java</directory>-->
-<!--                <includes>-->
-<!--                    <include>**/*.xml</include>-->
-<!--                </includes>-->
-<!--                <filtering>false</filtering>-->
-<!--            </resource>-->
+            <!--            <resource>-->
+            <!--                <directory>src/main/java</directory>-->
+            <!--                <includes>-->
+            <!--                    <include>**/*.xml</include>-->
+            <!--                </includes>-->
+            <!--                <filtering>false</filtering>-->
+            <!--            </resource>-->
 
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
             </resource>
         </resources>
-        <finalName>servicecloud-provider-dept-8001</finalName>
+        <finalName>servicecloud-provider-dept-8003</finalName>
     </build>
 </project>
