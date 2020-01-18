@@ -24,6 +24,7 @@
         <module>servicecloud-provider-dept-8002</module>
         <module>servicecloud-provider-dept-8003</module>
         <module>servicecloud-consumer-dept-feign</module>
+        <module>servicecloud-provider-dept-hystrix-8001</module>
     </modules>
     <packaging>pom</packaging>
 

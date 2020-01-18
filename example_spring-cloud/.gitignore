@@ -13,3 +13,4 @@ servicecloud-provider-dept-8003.iml
 target/
 target/
 servicecloud-consumer-dept-feign.iml
+servicecloud-provider-dept-hystrix-8001.iml
