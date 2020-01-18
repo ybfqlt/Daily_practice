@@ -12,3 +12,4 @@ servicecloud-provider-dept-8002.iml
 servicecloud-provider-dept-8003.iml
 target/
 target/
+servicecloud-consumer-dept-feign.iml
