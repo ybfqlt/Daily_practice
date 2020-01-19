@@ -90,6 +90,6 @@
                 <filtering>true</filtering>
             </resource>
         </resources>
-        <finalName>servicecloud-provider-dept-8003</finalName>
+        <finalName>servicecloud-provider-dept-hystrix-8001</finalName>
     </build>
 </project>

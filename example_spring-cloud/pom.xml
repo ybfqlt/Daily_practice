@@ -26,6 +26,7 @@
         <module>servicecloud-consumer-dept-feign</module>
         <module>servicecloud-provider-dept-hystrix-8001</module>
         <module>servicecloud-consumer-hystrix-dashboard</module>
+        <module>servicecloud-zuul-gateway-9527</module>
     </modules>
     <packaging>pom</packaging>
 
