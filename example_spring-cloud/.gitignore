@@ -14,3 +14,4 @@ target/
 target/
 servicecloud-consumer-dept-feign.iml
 servicecloud-provider-dept-hystrix-8001.iml
+servicecloud-consumer-hystrix-dashboard.iml

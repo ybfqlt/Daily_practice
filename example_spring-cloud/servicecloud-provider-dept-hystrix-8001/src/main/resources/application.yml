@@ -49,3 +49,13 @@ info:
 #  build.version: '@project.version@'
   build.artifactId: $project.artifactId$
   build.version: $project.version$
+
+#feign:
+#  hystrix:
+#    enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
