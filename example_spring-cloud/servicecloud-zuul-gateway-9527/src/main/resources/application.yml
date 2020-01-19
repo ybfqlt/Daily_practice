@@ -13,6 +13,14 @@ eureka:
     instance-id: gateway-9527.com
     prefer-ip-address: true
 
+zuul:
+  routes:
+    mydept.serviceId: servicecloud-dept
+    mydept.path: /mydept/**
+#  ignored-services: servicecloud-dept    忽略单个微服务
+  ignored-services: "*"              #忽略多个微服务真实名称
+  prefix: /xns
+
 info:
   app.name: xns-cloud
   company.name: www.xns.com
