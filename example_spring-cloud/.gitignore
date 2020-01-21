@@ -16,3 +16,4 @@ servicecloud-consumer-hystrix-dashboard.iml
 servicecloud-zuul-gateway-9527.iml
 servicecloud-config-3344.iml
 servicecloud-config-client-3355.iml
+servicecloud-config-eureka-client-7001.iml

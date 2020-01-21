@@ -29,6 +29,7 @@
         <module>servicecloud-zuul-gateway-9527</module>
         <module>servicecloud-config-3344</module>
         <module>servicecloud-config-client-3355</module>
+        <module>servicecloud-config-eureka-client-7001</module>
     </modules>
     <packaging>pom</packaging>
 
