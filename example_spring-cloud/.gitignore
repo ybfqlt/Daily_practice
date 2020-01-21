@@ -15,3 +15,4 @@ servicecloud-provider-dept-hystrix-8001.iml
 servicecloud-consumer-hystrix-dashboard.iml
 servicecloud-zuul-gateway-9527.iml
 servicecloud-config-3344.iml
+servicecloud-config-client-3355.iml
