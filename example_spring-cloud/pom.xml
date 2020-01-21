@@ -27,6 +27,7 @@
         <module>servicecloud-provider-dept-hystrix-8001</module>
         <module>servicecloud-consumer-hystrix-dashboard</module>
         <module>servicecloud-zuul-gateway-9527</module>
+        <module>servicecloud-config-3344</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -43,6 +44,7 @@
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
                 <version>Finchley.BUILD-SNAPSHOT</version>
+<!--                <version>Finchley.M9</version>-->
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -112,13 +114,13 @@
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-web</artifactId>
-                <version>2.1.9.RELEASE</version>
+                <version>2.0.0.RELEASE</version>
             </dependency>
 
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-test</artifactId>
-                <version>2.1.9.RELEASE</version>
+                <version>2.0.0.RELEASE</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
